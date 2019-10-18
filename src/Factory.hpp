@@ -1,7 +1,5 @@
-#ifndef ABSTRACTVM_FACTORY_HPP
-#define ABSTRACTVM_FACTORY_HPP
+#pragma once
 
-#include "../inc/abstractVmIncs.hpp"
 #include "Operand.hpp"
 
 class Factory
@@ -26,6 +24,3 @@ private:
 				IOperand const *(Factory::*)( std::string const & value ) const
 	        > _createFunctions[];
 };
-
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef ABSTRACTVM_IOPERAND_HPP
-#define ABSTRACTVM_IOPERAND_HPP
+#pragma once
 
 #include "../inc/abstractVmIncs.hpp"
 
@@ -18,5 +17,3 @@ public:
 
 	virtual ~IOperand() {}
 };
-
-#endif

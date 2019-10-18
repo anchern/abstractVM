@@ -1,5 +1,5 @@
 #include "Factory.hpp"
-
+#include "Operand.cpp"
 
 std::pair<
 		eOperandType,

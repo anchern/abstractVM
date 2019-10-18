@@ -1,6 +1,4 @@
-#ifndef ABSTRACTVM_VMLOGIC_HPP
-#define ABSTRACTVM_VMLOGIC_HPP
-
+#pragma once
 
 #include <deque>
 #include "Operand.hpp"
@@ -28,6 +26,3 @@ private:
 	static std::pair<std::string, void (VMLogic::*)()>	_funcsWithoutParams[];
 	static std::pair<std::string, void (VMLogic::*)(const std::string &)>	_funcsWithParams[];
 };
-
-
-#endif

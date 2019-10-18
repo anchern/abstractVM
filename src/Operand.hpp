@@ -1,8 +1,7 @@
-#ifndef ABSTACTVM_OPERAND_HPP
-#define ABSTACTVM_OPERAND_HPP
-
+#pragma once
 
 #include "IOperand.hpp"
+#include "Factory.hpp"
 #include <iomanip>
 #include <cmath>
 #include <sstream>
@@ -14,89 +13,36 @@ class Operand : public IOperand
 {
 
 public:
-    Operand()
-	{
-    	_operandType = Int8;
-		this->_valueString = "0";
-		this->_valueScalar = 0;
-	}
-    explicit Operand(eOperandType operandType, T valueScalar) :
-    _valueScalar(valueScalar),
-    _operandType(operandType)
-    {
-		std::stringstream ss;
+	Operand();
 
-		ss << std::setprecision(MAX_PRECISION) << this->_valueScalar;
-		ss >> _valueString;
-	}
+	explicit Operand(eOperandType operandType, T valueScalar);
 
-    explicit Operand(eOperandType operandType, std::string const &valueString) :
-    _operandType(operandType)
-	{
-		std::stringstream ss;
+	explicit Operand(eOperandType operandType, std::string const &valueString);
 
-		_valueScalar = std::stod(valueString);
-		ss << std::setprecision(MAX_PRECISION) << this->_valueScalar;
-		ss >> _valueString;
-	}
+	int getPrecision() const override; // Precision of the type of the instance
 
-    int getPrecision() const // Precision of the type of the instance
-	{
-    	if (_operandType < Float)
-			return 0;
-    	else
-		{
-			if (_valueString.find(".") != std::string::npos)
-			{
-				const std::string &tmp = _valueString.substr(_valueString.find("."));
-				return tmp.size() - 1;
-			}
-			else
-				return 0;
-		}
-	}
-    eOperandType getType( ) const // Type of the instance
-	{
-		return _operandType;
-	}
+	eOperandType getType( ) const override; // Type of the instance
 
-    IOperand const * operator+( IOperand const & rhs ) const // Sum
-	{
 
-	}
-    IOperand const * operator-( IOperand const & rhs ) const // Difference
-	{
-		return nullptr;
-	}
-    IOperand const * operator*( IOperand const & rhs ) const // Product
-	{
-		return nullptr;
-	}
-    IOperand const * operator/( IOperand const & rhs ) const // Quotient
-	{
-		return nullptr;
-	}
-    IOperand const * operator%( IOperand const & rhs ) const // Modulo
-	{
-		return nullptr;
-	}
+	IOperand const * operator+( IOperand const & rhs ) const override; // Sum
 
-    std::string const &toString() const
-	{
-		return _valueString;
+	IOperand const * operator-( IOperand const & rhs ) const override; // Difference
 
-	}
+	IOperand const * operator*( IOperand const & rhs ) const override; // Product
 
-	~Operand()
-	{
+	IOperand const * operator/( IOperand const & rhs ) const override; // Quotient
 
-	};
+	IOperand const * operator%( IOperand const & rhs ) const override; // Modulo
+
+
+	std::string const &toString() const override;
+
+
+	~Operand() override;
 
 private:
-    T				_valueScalar;
-    eOperandType	_operandType;
-    std::string		_valueString;
+	T				_valueScalar;
+	eOperandType	_operandType;
+	std::string		_valueString;
 };
 
-
-#endif
