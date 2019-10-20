@@ -56,6 +56,12 @@ int	Operand<T>::getPrecision() const
 }
 
 template <class T>
+T Operand<T>::getValueScalar() const
+{
+    return _valueScalar;
+}
+
+template <class T>
 eOperandType	Operand<T>::getType() const
 {
 	return _operandType;
@@ -65,7 +71,34 @@ template <class T>
 std::string const	&Operand<T>::toString() const
 {
 	return _valueString;
+}
 
+template<class K>
+void check_adding(K a, K b)
+{
+    K sum = a + b;
+    if ((a < 0) == (b < 0)) {
+        if (a < 0 && sum > b)
+            throw std::logic_error("Underflow");
+        else if (sum < b)
+            throw std::logic_error("Overflow");
+    }
+}
+
+template<class T> void
+check_mul(T a, T b)
+{
+    T max = std::numeric_limits<T>::max();
+    T abs_a = (a < 0 ? a * -1 : a);
+    T abs_b = (b < 0 ? b * -1 : b);
+    if (abs_a > max/abs_b) {
+        if ((a < 0) && (b < 0))
+            throw std::logic_error("Overflow");
+        else if ((a > 0) && (b > 0))
+            throw std::logic_error("Overflow");
+        else
+            throw std::logic_error("Underflow");
+    }
 }
 
 template <class T>
@@ -80,6 +113,7 @@ IOperand const * Operand<T>::operator+( IOperand const & rhs ) const
 	ssv1 >> v1;
 	ssv2 << this->toString();
 	ssv2 >> v2;
+	check_adding(v1, v2);
 	res << v1 + v2;
 	if (rhs.getType() > this->_operandType)
 		returned = Factory().createOperand(rhs.getType(), res.str());
@@ -100,7 +134,8 @@ IOperand const * Operand<T>::operator-( IOperand const & rhs ) const
 	ssv1 >> v1;
 	ssv2 << this->toString();
 	ssv2 >> v2;
-	res << v2 - v1;
+    check_adding(v2, -v1);
+    res << v2 - v1;
 	if (rhs.getType() > this->_operandType)
 		returned = Factory().createOperand(rhs.getType(), res.str());
 	else
@@ -119,6 +154,7 @@ IOperand const * Operand<T>::operator*( IOperand const & rhs ) const
 	ssv1 >> v1;
 	ssv2 << this->toString();
 	ssv2 >> v2;
+	check_mul(v1, v2);
 	res << v1 * v2;
 	if (rhs.getType() > this->_operandType)
 		returned = Factory().createOperand(rhs.getType(), res.str());
@@ -138,7 +174,10 @@ IOperand const * Operand<T>::operator/( IOperand const & rhs ) const
 	ssv1 >> v1;
 	ssv2 << this->toString();
 	ssv2 >> v2;
-	res << v2 / v1;
+	if (v2 == 0)
+	    std::logic_error("Cant divide by zero");
+    check_mul(v2, 1 / v1);
+    res << v2 / v1;
 	if (rhs.getType() > this->_operandType)
 		returned = Factory().createOperand(rhs.getType(), res.str());
 	else
@@ -163,15 +202,20 @@ IOperand const * Operand<T>::operator%( IOperand const & rhs ) const
 		ssv1 >> v1;
 		ssv2 << this->toString();
 		ssv2 >> v2;
+        if (v2 == 0)
+            std::logic_error("Cant modulo by zero");
 		res << v2 % v1;
 		if (rhs.getType() > _operandType)
 			returned = Factory().createOperand(rhs.getType(), res.str());
 		else
 			returned = Factory().createOperand(_operandType, res.str());
 		return (returned);
-	} else
+	}
+	else
 		return (nullptr);
 }
+
+
 
 template <class T>
 Operand<T>::~Operand()

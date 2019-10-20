@@ -23,6 +23,7 @@ public:
 
 	eOperandType getType( ) const override; // Type of the instance
 
+	T getValueScalar() const;
 
 	IOperand const * operator+( IOperand const & rhs ) const override; // Sum
 
@@ -34,9 +35,7 @@ public:
 
 	IOperand const * operator%( IOperand const & rhs ) const override; // Modulo
 
-
 	std::string const &toString() const override;
-
 
 	~Operand() override;
 
