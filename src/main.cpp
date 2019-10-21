@@ -4,21 +4,10 @@
 
 int main()
 {
-    VMLogic vmLogic;
-    try
-    {
+   std::string s1 = "10";
+   std::string s2 = "9";
 
-    }
-    catch (std::exception &e)
-    {
-        vmLogic.pushErr(e.what());
-    }
-
-    std::string str = "50";
-	IOperand const *operand1 = Factory().createOperand(Double, "40.555");
-	IOperand const *operand2 = Factory().createOperand(Double, "5");
-	std::cout << (*operand1 % *operand2)->toString() << std::endl;
-	std::cout << 40.555 / 1.0 << std::endl;
+   std::cout << s2.compare(s1);
 
 	return 0;
 }

@@ -36,17 +36,23 @@ void VMLogic::commandExe(const std::string &funcName)
 {
 	for (auto & _funcWithoutParams : _funcsWithoutParams)
 	{
-		if (_funcsWithoutParams->first == funcName)
+		if (_funcWithoutParams.first == funcName)
+		{
 			(this->*_funcWithoutParams.second)();
+			return ;
+		}
 	}
 }
 
-void VMLogic::commandExe(const std::string &funcName, eOperandType type, const std::string &value)
+void VMLogic:: commandExe(const std::string &funcName, eOperandType type, const std::string &value)
 {
 	for (auto & _funcWithParams : _funcsWithParams)
 	{
-		if (_funcsWithParams->first == funcName)
+		if (_funcWithParams.first == funcName)
+		{
 			(this->*_funcWithParams.second)(type, value);
+			return ;
+		}
 	}
 }
 
@@ -66,9 +72,7 @@ void VMLogic::pop()
 void VMLogic::dump()
 {
     for (auto & _register : _registers)
-    {
-        std::cout << _register << std::endl;
-    }
+        std::cout << _register->toString() << std::endl;
 }
 
 void VMLogic::assert(eOperandType type, const std::string &value)
@@ -154,5 +158,5 @@ void VMLogic::print()
 
 void VMLogic::exit()
 {
-
+	std::exit(0);
 }

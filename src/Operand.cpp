@@ -2,6 +2,16 @@
 
 class Factory;
 
+namespace
+{	template <class T>
+	bool checkOverflow(std::string const &number)
+	{
+		std::string max = std::to_string(std::numeric_limits<T>::max());
+		std::cout << number.compare(max) << std::endl;
+		return true;
+	}
+}
+
 template <class T>
 Operand<T>::Operand()
 {
@@ -16,12 +26,16 @@ Operand<T>::Operand(eOperandType operandType, T valueScalar) :
 		_operandType(operandType)
 {
 	std::stringstream ss;
+	double convert;
 
 	if (_operandType == Int8)
 		ss << static_cast<int>(this->_valueScalar);
 	else
 		ss << std::setprecision(MAX_PRECISION) << this->_valueScalar;
 	ss >> _valueString;
+	ss >> convert;
+	if (_operandType < Float && _valueScalar != static_cast<long>(convert))
+		throw (std::logic_error("Hyu"));
 }
 
 template <class T>
@@ -29,13 +43,31 @@ Operand<T>::Operand(eOperandType operandType, std::string const &valueString) :
 		_operandType(operandType)
 {
 	std::stringstream ss;
+	double convert;
 
-	_valueScalar = std::stod(valueString);
+//	checkOverflow<T>("10");
+	try
+	{
+		if (_operandType == Float)
+			convert = std::stof(valueString);
+		else
+			convert = std::stod(valueString);
+	}
+	catch (...)
+	{
+		throw (std::logic_error("!!!!Hyu!!!"));
+	}
+	_valueScalar = convert;
+	if (_operandType < Float && _valueScalar != static_cast<long>(convert))
+		throw (std::logic_error("Hyu!!!"));
+	else if (convert == INFINITY)
+		throw (std::logic_error("Hyu!"));
 	if (_operandType == Int8)
 		ss << static_cast<int>(this->_valueScalar);
 	else
 		ss << std::setprecision(MAX_PRECISION) << this->_valueScalar;
 	ss >> _valueString;
+
 }
 
 template <class T>
@@ -175,7 +207,7 @@ IOperand const * Operand<T>::operator/( IOperand const & rhs ) const
 	ssv2 << this->toString();
 	ssv2 >> v2;
 	if (v2 == 0)
-	    std::logic_error("Cant divide by zero");
+	    throw (std::logic_error("Cant divide by zero"));
     check_mul(v2, 1 / v1);
     res << v2 / v1;
 	if (rhs.getType() > this->_operandType)
@@ -203,7 +235,7 @@ IOperand const * Operand<T>::operator%( IOperand const & rhs ) const
 		ssv2 << this->toString();
 		ssv2 >> v2;
         if (v2 == 0)
-            std::logic_error("Cant modulo by zero");
+            throw (std::logic_error("Cant modulo by zero"));
 		res << v2 % v1;
 		if (rhs.getType() > _operandType)
 			returned = Factory().createOperand(rhs.getType(), res.str());
@@ -212,7 +244,7 @@ IOperand const * Operand<T>::operator%( IOperand const & rhs ) const
 		return (returned);
 	}
 	else
-		return (nullptr);
+		throw (std::logic_error("Urod"));
 }
 
 
