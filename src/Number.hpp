@@ -18,10 +18,10 @@ public:
 
     Number(double number);
 
-    bool getType();
-    double  getValue() const;
+    bool getType() override;
+    double  getValue() const override;
 
-    void    setValue(double value);
+    void    setValue(double value) override;
     ~Number() override = default;
 private:
     double  _number;

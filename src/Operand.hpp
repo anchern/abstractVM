@@ -2,6 +2,7 @@
 
 #include "IOperand.hpp"
 #include "Factory.hpp"
+#include "Exceptions.hpp"
 #include <iomanip>
 #include <cmath>
 #include <sstream>

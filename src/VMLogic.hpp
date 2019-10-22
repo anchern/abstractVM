@@ -4,22 +4,11 @@
 #include "Operand.hpp"
 #include "Operand.cpp"
 #include "Factory.hpp"
+#include "Exceptions.hpp"
 
 class VMLogic
 {
 public:
-
-    class StackIsEmpty : public std::exception
-    {
-    public:
-        virtual const char    *what() const throw();
-    };
-
-    class StackHasLessTwoElements : public std::exception
-    {
-    public:
-        virtual const char    *what() const throw();
-    };
 
 	void	push(eOperandType type, const std::string &value);
 	void	pop();

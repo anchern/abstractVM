@@ -25,7 +25,7 @@ add_executable(abstractVM regexLearn.cpp src/Factory.cpp
         src/VMLogic.cpp
         src/VMLogic.hpp
         src/Sign.cpp
-        src/Sign.hpp src/Number.cpp src/Number.hpp src/SignOrNumber.hpp)
+        src/Sign.hpp src/Number.cpp src/Number.hpp src/SignOrNumber.hpp src/Calculator.cpp src/Calculator.hpp src/Exceptions.cpp src/Exceptions.hpp)
 
 #
 #TARGET_LINK_LIBRARIES( abstractVM LINK_PUBLIC ${Boost_LIBRARIES} )

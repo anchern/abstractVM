@@ -14,12 +14,11 @@ public:
     Sign();
     Sign(char sign);
 
+    double getValue() const override;
 
-    double getValue() const;
+    bool getType() override;
 
-    bool getType();
-
-    void setValue(double sign);
+    void setValue(double sign) override;
 
     bool    checkSign(char sign);
 

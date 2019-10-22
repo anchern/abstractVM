@@ -29,9 +29,9 @@ Sign& Sign::operator=(Sign const &fixed)
 
 bool Sign::checkSign(char sign)
 {
-    for (int i = 0; i < _availableSigns.length(); i++)
+    for (char _availableSign : _availableSigns)
     {
-        if (sign == _availableSigns[i])
+        if (sign == _availableSign)
             return true;
     }
     return (false);
@@ -50,8 +50,8 @@ bool Sign::getType()
 void Sign::setValue(double sign)
 {
     sign = static_cast<char>(sign);
-    if (checkSign(sign))
-        _sign = sign;
+    if (checkSign(static_cast<char>(sign)))
+        _sign = static_cast<char>(sign);
     else
         _sign = '?';
     setPriotity();

@@ -3,13 +3,37 @@
 class Factory;
 
 namespace
-{	template <class T>
-	bool checkOverflow(std::string const &number)
-	{
-		std::string max = std::to_string(std::numeric_limits<T>::max());
-		std::cout << number.compare(max) << std::endl;
-		return true;
-	}
+{
+    template<class K>
+    void check_adding(K first, K second)
+    {
+        K sum = first + second;
+        if ((first < 0) == (second < 0))
+        {
+            if (first < 0 && sum > second)
+                throw Exceptions::Underflow();
+            else if (sum < second)
+                throw Exceptions::Overflow();
+        }
+    }
+
+    template<class T>
+    void
+    check_mul(T a, T b)
+    {
+        T max = std::numeric_limits<T>::max();
+        T abs_a = (a < 0 ? a * -1 : a);
+        T abs_b = (b < 0 ? b * -1 : b);
+        if (abs_a > max / abs_b)
+        {
+            if ((a < 0) && (b < 0))
+                throw Exceptions::Overflow();
+            else if ((a > 0) && (b > 0))
+                throw Exceptions::Overflow();
+            else
+                throw Exceptions::Underflow();
+        }
+    }
 }
 
 template <class T>
@@ -35,7 +59,7 @@ Operand<T>::Operand(eOperandType operandType, T valueScalar) :
 	ss >> _valueString;
 	ss >> convert;
 	if (_operandType < Float && _valueScalar != static_cast<long>(convert))
-		throw (std::logic_error("Hyu"));
+		throw (Exceptions::Overflow());
 }
 
 template <class T>
@@ -45,7 +69,6 @@ Operand<T>::Operand(eOperandType operandType, std::string const &valueString) :
 	std::stringstream ss;
 	double convert;
 
-//	checkOverflow<T>("10");
 	try
 	{
 		if (_operandType == Float)
@@ -53,15 +76,21 @@ Operand<T>::Operand(eOperandType operandType, std::string const &valueString) :
 		else
 			convert = std::stod(valueString);
 	}
-	catch (...)
+	catch (std::exception &e)
 	{
-		throw (std::logic_error("!!!!Hyu!!!"));
+        if (valueString[0] != '-')
+            throw (Exceptions::Overflow());
+        else
+            throw (Exceptions::Underflow());
 	}
 	_valueScalar = convert;
 	if (_operandType < Float && _valueScalar != static_cast<long>(convert))
-		throw (std::logic_error("Hyu!!!"));
-	else if (convert == INFINITY)
-		throw (std::logic_error("Hyu!"));
+	{
+        if (valueString[0] != '-')
+            throw (Exceptions::Overflow());
+        else
+            throw (Exceptions::Underflow());
+    }
 	if (_operandType == Int8)
 		ss << static_cast<int>(this->_valueScalar);
 	else
@@ -102,119 +131,93 @@ eOperandType	Operand<T>::getType() const
 template <class T>
 std::string const	&Operand<T>::toString() const
 {
-	return _valueString;
-}
-
-template<class K>
-void check_adding(K a, K b)
-{
-    K sum = a + b;
-    if ((a < 0) == (b < 0)) {
-        if (a < 0 && sum > b)
-            throw std::logic_error("Underflow");
-        else if (sum < b)
-            throw std::logic_error("Overflow");
-    }
-}
-
-template<class T> void
-check_mul(T a, T b)
-{
-    T max = std::numeric_limits<T>::max();
-    T abs_a = (a < 0 ? a * -1 : a);
-    T abs_b = (b < 0 ? b * -1 : b);
-    if (abs_a > max/abs_b) {
-        if ((a < 0) && (b < 0))
-            throw std::logic_error("Overflow");
-        else if ((a > 0) && (b > 0))
-            throw std::logic_error("Overflow");
-        else
-            throw std::logic_error("Underflow");
-    }
+    return _valueString;
 }
 
 template <class T>
 IOperand const * Operand<T>::operator+( IOperand const & rhs ) const
 {
+	const IOperand *result;
+	std::string tmp;
+	double number1 = 0;
+    double number2 = 0;
+    size_t  i;
 
-	const IOperand *returned;
-	double v1 = 0, v2 = 0;
-	std::stringstream ssv1, ssv2, res;
-
-	ssv1 << rhs.toString();
-	ssv1 >> v1;
-	ssv2 << this->toString();
-	ssv2 >> v2;
-	check_adding(v1, v2);
-	res << v1 + v2;
+    number1 = std::stod(rhs.toString(), &i);
+    i = 0;
+    number2 = std::stod(this->toString(), &i);
+	check_adding(number1, number2);
+    tmp = std::to_string(number1 + number2);
 	if (rhs.getType() > this->_operandType)
-		returned = Factory().createOperand(rhs.getType(), res.str());
+        result = Factory().createOperand(rhs.getType(), tmp);
 	else
-		returned = Factory().createOperand(_operandType, res.str());
-	return (returned);
-
+        result = Factory().createOperand(_operandType, tmp);
+	return (result);
 }
 
 template <class T>
 IOperand const * Operand<T>::operator-( IOperand const & rhs ) const
 {
-	const IOperand *returned;
-	double v1 = 0, v2 = 0;
-	std::stringstream ssv1, ssv2, res;
+    const IOperand *result;
+    std::string tmp;
+    double number1 = 0;
+    double number2 = 0;
+    size_t  i;
 
-	ssv1 << rhs.toString();
-	ssv1 >> v1;
-	ssv2 << this->toString();
-	ssv2 >> v2;
-    check_adding(v2, -v1);
-    res << v2 - v1;
-	if (rhs.getType() > this->_operandType)
-		returned = Factory().createOperand(rhs.getType(), res.str());
-	else
-		returned = Factory().createOperand(_operandType, res.str());
-	return (returned);
+    number2 = std::stod(rhs.toString(), &i);
+    i = 0;
+    number1 = std::stod(this->toString(), &i);
+    check_adding(number1, (-1) * number2);
+    tmp = std::to_string(number1 - number2);
+    if (rhs.getType() > this->_operandType)
+        result = Factory().createOperand(rhs.getType(), tmp);
+    else
+        result = Factory().createOperand(_operandType, tmp);
+    return (result);
 }
 
 template <class T>
 IOperand const * Operand<T>::operator*( IOperand const & rhs ) const
 {
-	const IOperand *returned;
-	double v1 = 0, v2 = 0;
-	std::stringstream ssv1, ssv2, res;
+    const IOperand *result;
+    std::string tmp;
+    double number1 = 0;
+    double number2 = 0;
+    size_t  i;
 
-	ssv1 << rhs.toString();
-	ssv1 >> v1;
-	ssv2 << this->toString();
-	ssv2 >> v2;
-	check_mul(v1, v2);
-	res << v1 * v2;
-	if (rhs.getType() > this->_operandType)
-		returned = Factory().createOperand(rhs.getType(), res.str());
-	else
-		returned = Factory().createOperand(_operandType, res.str());
-	return (returned);
+    number1 = std::stod(rhs.toString(), &i);
+    i = 0;
+    number2 = std::stod(this->toString(), &i);
+    check_mul(number1, number2);
+    tmp = std::to_string(number1 * number2);
+    if (rhs.getType() > this->_operandType)
+        result = Factory().createOperand(rhs.getType(), tmp);
+    else
+        result = Factory().createOperand(_operandType, tmp);
+    return (result);
 }
 
 template <class T>
 IOperand const * Operand<T>::operator/( IOperand const & rhs ) const
 {
-	const IOperand *returned;
-	double v1 = 0, v2 = 0;
-	std::stringstream ssv1, ssv2, res;
+    const IOperand *result;
+    std::string tmp;
+    double number1 = 0;
+    double number2 = 0;
+    size_t  i;
 
-	ssv1 << rhs.toString();
-	ssv1 >> v1;
-	ssv2 << this->toString();
-	ssv2 >> v2;
-	if (v2 == 0)
-	    throw (std::logic_error("Cant divide by zero"));
-    check_mul(v2, 1 / v1);
-    res << v2 / v1;
-	if (rhs.getType() > this->_operandType)
-		returned = Factory().createOperand(rhs.getType(), res.str());
-	else
-		returned = Factory().createOperand(_operandType, res.str());
-	return (returned);
+    number2 = std::stod(rhs.toString(), &i);
+    i = 0;
+    number1 = std::stod(this->toString(), &i);
+    if (number2 == 0)
+        throw (Exceptions::DivideZero());
+    check_mul(number1, 1 / number2);
+    tmp = std::to_string(number1 / number2);
+    if (rhs.getType() > this->_operandType)
+        result = Factory().createOperand(rhs.getType(), tmp);
+    else
+        result = Factory().createOperand(_operandType, tmp);
+    return (result);
 }
 
 template <class T>
@@ -226,27 +229,27 @@ IOperand const * Operand<T>::operator%( IOperand const & rhs ) const
 	thisType = _operandType;
 	if (rhsType != Double && rhsType != Float && thisType != Double && thisType != Float)
 	{
-		const IOperand *returned;
-		int v1 = 0, v2 = 0;
-		std::stringstream ssv1, ssv2, res;
+        const IOperand *result;
+        std::string tmp;
+        double number1 = 0;
+        double number2 = 0;
+        size_t  i;
 
-		ssv1 << rhs.toString();
-		ssv1 >> v1;
-		ssv2 << this->toString();
-		ssv2 >> v2;
-        if (v2 == 0)
-            throw (std::logic_error("Cant modulo by zero"));
-		res << v2 % v1;
-		if (rhs.getType() > _operandType)
-			returned = Factory().createOperand(rhs.getType(), res.str());
-		else
-			returned = Factory().createOperand(_operandType, res.str());
-		return (returned);
+        number2 = std::stod(rhs.toString(), &i);
+        i = 0;
+        number1 = std::stod(this->toString(), &i);
+        if (number2 == 0)
+            throw (Exceptions::ModuleZero());
+        tmp = std::to_string(number1 / number2);
+        if (rhs.getType() > this->_operandType)
+            result = Factory().createOperand(rhs.getType(), tmp);
+        else
+            result = Factory().createOperand(_operandType, tmp);
+        return (result);
 	}
 	else
-		throw (std::logic_error("Urod"));
+		throw (std::logic_error("Only integers can be use with module"));
 }
-
 
 
 template <class T>
