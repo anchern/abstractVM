@@ -1,6 +1,4 @@
-//
-// Created by Denis LEWANDOWSKI on 2019-10-21.
-//
+
 
 #include "Exceptions.hpp"
 
@@ -54,7 +52,7 @@ const char* Exceptions::ModuleZero::what() const noexcept
     return std::logic_error::what();
 }
 
-Exceptions::ModuleZero::ModuleZero() :  std::invalid_argument("Cant divide by zero")
+Exceptions::ModuleZero::ModuleZero() :  std::invalid_argument("Cant module by zero")
 {
 
 }

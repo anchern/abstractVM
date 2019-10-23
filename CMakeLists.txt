@@ -3,7 +3,7 @@ project(abstractVM)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_definitions("-Wall -std=c++1y")
+add_definitions("-Wall -Wextra -Werror -std=c++1y")
 
 #set(Boost_USE_STATIC_LIBS        ON)  # only find static libs
 #set(Boost_USE_DEBUG_LIBS         OFF) # ignore debug libs and
@@ -17,7 +17,7 @@ add_definitions("-Wall -std=c++1y")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
-add_executable(abstractVM regexLearn.cpp src/Factory.cpp
+add_executable(abstractVM src/main.cpp src/Factory.cpp
         src/Factory.hpp
         src/IOperand.hpp
         src/Operand.cpp
@@ -25,7 +25,7 @@ add_executable(abstractVM regexLearn.cpp src/Factory.cpp
         src/VMLogic.cpp
         src/VMLogic.hpp
         src/Sign.cpp
-        src/Sign.hpp src/Number.cpp src/Number.hpp src/SignOrNumber.hpp src/Calculator.cpp src/Calculator.hpp src/Exceptions.cpp src/Exceptions.hpp)
+        src/Sign.hpp src/Number.cpp src/Number.hpp src/SignOrNumber.hpp src/Calculator.cpp src/Calculator.hpp src/Exceptions.cpp src/Exceptions.hpp src/AbstactVM.cpp src/AbstactVM.hpp)
 
 #
 #TARGET_LINK_LIBRARIES( abstractVM LINK_PUBLIC ${Boost_LIBRARIES} )

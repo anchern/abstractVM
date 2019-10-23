@@ -1,5 +1,14 @@
 #include "VMLogic.hpp"
 
+namespace
+{
+    template <class T>
+    void printGreen(T value)
+    {
+        std::cout.precision(4);
+        std::cout  <<  "\033[1;32m" <<  value << "\033[0m" << std::endl;
+    }
+}
 
 std::pair<std::string, void (VMLogic::*)()> VMLogic::_funcsWithoutParams[] = {
 		{"pop", &VMLogic::pop},
@@ -18,6 +27,11 @@ std::pair<std::string, void (VMLogic::*)(eOperandType type, const std::string &)
                                        {"assert", &VMLogic::assert}
 
 };
+
+VMLogic::VMLogic()
+{
+    _isExitPresent = false;
+}
 
 void VMLogic::commandExe(const std::string &funcName)
 {
@@ -59,7 +73,7 @@ void VMLogic::pop()
 void VMLogic::dump()
 {
     for (auto & _register : _registers)
-        std::cout << _register->toString() << std::endl;
+        printGreen(_register->toString());
 }
 
 void VMLogic::assert(eOperandType type, const std::string &value)
@@ -116,7 +130,7 @@ void VMLogic::div()
 
     if (_registers.size() < 2)
         throw Exceptions::StackHasLessTwoElements();
-    result = *(*_registers.begin()) / *(*(++_registers.begin()));
+    result = *(*++_registers.begin()) / *(*(_registers.begin()));
     _registers.pop_front();
     _registers.pop_front();
     _registers.push_front(const_cast<IOperand *>(result));
@@ -128,7 +142,7 @@ void VMLogic::mod()
 
     if (_registers.size() < 2)
         throw Exceptions::StackHasLessTwoElements();
-    result = *(*_registers.begin()) % *(*(++_registers.begin()));
+    result = *(*++_registers.begin()) % *(*(_registers.begin()));
     _registers.pop_front();
     _registers.pop_front();
     _registers.push_front(const_cast<IOperand *>(result));
@@ -139,13 +153,17 @@ void VMLogic::print()
     if (_registers.empty())
         throw Exceptions::StackIsEmpty();
     if ((*_registers.begin())->getType() == Int8)
-        std::cout << static_cast<char>(Operand<char>
-                (Int8, (*_registers.begin())->toString()).getValueScalar()) << std::endl;
+        printGreen(static_cast<char>(Operand<char>(Int8, (*_registers.begin())->toString()).getValueScalar()));
     else
         throw std::logic_error("Print error.Value is not an 8-bit integer");
 }
 
 void VMLogic::exit()
 {
+    _isExitPresent = true;
+}
 
+bool VMLogic::getIsExitPresent() const
+{
+    return _isExitPresent;
 }

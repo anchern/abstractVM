@@ -1,9 +1,6 @@
-//
-// Created by Denis LEWANDOWSKI on 2019-10-02.
-//
+
 #pragma once
-#ifndef C__POOL_SIGN_HPP
-#define C__POOL_SIGN_HPP
+
 
 #include <iostream>
 #include "SignOrNumber.hpp"
@@ -40,5 +37,3 @@ private:
     void    setPriotity();
 };
 
-
-#endif //C__POOL_SIGN_HPP

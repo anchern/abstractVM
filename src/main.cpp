@@ -1,13 +1,16 @@
-#include <iostream>
-#include "Factory.hpp"
-#include "VMLogic.hpp"
 
-int main()
+#include "AbstactVM.hpp"
+
+int main(int argc, char *argv[])
 {
-   std::string s1 = "10";
-   std::string s2 = "9";
+    AbstactVM abstactVm;
 
-   std::cout << s2.compare(s1);
-
-	return 0;
+    try
+    {
+        abstactVm.launch(argc, argv);
+    }
+    catch (std::exception &e)
+    {
+        std::cout  <<  "\033[4;31m" << "Line " << abstactVm.getLine() << ": " <<  e.what() << "\033[0m" << std::endl;
+    }
 }

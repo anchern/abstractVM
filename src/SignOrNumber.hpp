@@ -1,11 +1,5 @@
-//
-// Created by Denis LEWANDOWSKI on 2019-10-19.
-//
-#pragma once
-#ifndef ABSTRACTVM_SIGNORNUMBER_HPP
-#define ABSTRACTVM_SIGNORNUMBER_HPP
 
-#endif //ABSTRACTVM_SIGNORNUMBER_HPP
+#pragma once
 
 class SignOrNumber
 {

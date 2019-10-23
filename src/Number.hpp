@@ -1,6 +1,4 @@
-//
-// Created by Denis LEWANDOWSKI on 2019-10-19.
-//
+
 
 #pragma once
 

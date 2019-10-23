@@ -1,8 +1,7 @@
-//
-// Created by Denis LEWANDOWSKI on 2019-10-21.
-//
+
 
 #include <vector>
+#include <regex>
 #include "Calculator.hpp"
 #include "Exceptions.hpp"
 
@@ -42,10 +41,10 @@ namespace
     }
 
 
-    int checkSignedNumber(std::string &input, int i)
+    int checkSignedNumber(std::string &input, size_t i)
     {
         Sign sign;
-        int j;
+        size_t  j;
 
         j = i;
         if (input[j] == ')' || input[j] == '(')
@@ -67,7 +66,7 @@ namespace
         return 2;
     }
 
-    void skipNumber(std::string &input, int &i)
+    void skipNumber(std::string &input, size_t  &i)
     {
         while ((isdigit(input[i]) == 1 || input[i] == '.') && input[i] != ' ' &&  i < input.length())
             i++;
@@ -89,8 +88,7 @@ namespace
         {
             if (number1 == double(0))
             {
-                std::cout << "CANT DIVIDE BY 0!" << std::endl;
-                exit(0);
+                throw Exceptions::DivideZero();
             }
             return number2 / number1;
         }
@@ -99,7 +97,7 @@ namespace
 
     void bracketStuff(std::stack<SignOrNumber *> &operandStack, std::stack<SignOrNumber *> &mainStack)
     {
-        SignOrNumber *topString = nullptr;;
+        SignOrNumber *topString = nullptr;
 
         topString = stackTop(operandStack);
         while (topString->getValue() != '(')
@@ -111,9 +109,12 @@ namespace
         stackPop(operandStack);
     }
 
-    void    checkAndPushNumber(std::stack<SignOrNumber *> &mainStack, std::string &input, int &i)
+    void    checkAndPushNumber(std::stack<SignOrNumber *> &mainStack, std::string &input, size_t  &i)
     {
         size_t kek;
+        std::string tmp = R"((\+|\-)?0*\.0{324,}[1-9]+)";
+        std::regex regularkek(tmp);
+        std::cmatch result;
 
         try
         {
@@ -121,14 +122,16 @@ namespace
         }
         catch (std::exception &e)
         {
+            if (std::regex_match(input.c_str() + i, result, regularkek))
+                throw std::logic_error("Value so small");
             if ((input.c_str() + i)[0] != '-')
-                throw (Exceptions::Overflow());//UNDER?
+                throw (Exceptions::Overflow());
             else
                 throw (Exceptions::Underflow());
         }
     }
 
-    void signStuff(std::stack<SignOrNumber *> &operandStack, std::stack<SignOrNumber *> &mainStack, int &i, std::string &input)
+    void signStuff(std::stack<SignOrNumber *> &operandStack, std::stack<SignOrNumber *> &mainStack, size_t  &i, std::string &input)
     {
         SignOrNumber *tmpString = nullptr;
         Sign *sign1 = nullptr;
@@ -183,9 +186,8 @@ std::vector<SignOrNumber *> Calculator::createPolishString(std::string &input)
     std::stack<SignOrNumber *> mainStack;
     std::stack<SignOrNumber *> operandStack;
     Sign sign2;
-    size_t kek;
 
-    for (int i = 0; i < input.length(); i++)
+    for (size_t  i = 0; i < input.length(); i++)
     {
         if (input[i] == ')')
         {
@@ -237,4 +239,3 @@ double    Calculator::calculatePolishString(std::string &string)
     }
     return stackTop(mainStack);
 }
-
